@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:glong_ya_connect/Konstants/konstants.dart';
+import 'package:glong_ya_connect/Screens/Information.dart';
+import 'package:glong_ya_connect/Utilities/LocalDataProvider.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,27 +11,20 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     K k = K();
     return Scaffold(
-      backgroundColor: k.blue,
+      backgroundColor: Colors.blueGrey[100],
+      appBar: AppBar(title: const Text("Glong Ya")),
       body: Column(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const ComingUp(),
-          k.gap(size: 40),
           Container(
-            height: 470,
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.blueGrey[100],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
-              ),
             ),
             child: SingleChildScrollView(
               child: Column(
-                children: [k.gap(size: 20)] +
-                    [1, 2, 3, 4, 5]
+                children: [k.gap(size: 10)] +
+                    [1, 2, 3]
                         .map((e) => Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                               child: BoxInfo(
@@ -36,60 +32,21 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ))
                         .toList() +
-                    [k.gap(size: 20)],
+                    [
+                      k.gap(size: 20),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                          decoration: BoxDecoration(color: k.blue),
+                          child: Text(
+                            "Upload to your GlongYa",
+                            style: k.style(fontSize: 20, weight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ComingUp extends StatefulWidget {
-  const ComingUp({super.key});
-
-  @override
-  State<ComingUp> createState() => _ComingUpState();
-}
-
-class _ComingUpState extends State<ComingUp> {
-  @override
-  Widget build(BuildContext context) {
-    K k = K();
-    return Container(
-      height: 300,
-      width: 300,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: k.white,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "In the next",
-            style: k.style(
-              color: k.black,
-              fontSize: 20,
-            ),
-          ),
-          k.gap(size: 15),
-          Text(
-            "5 : 00",
-            style: k.style(
-              color: k.blue,
-              fontSize: 80,
-              weight: FontWeight.bold,
-            ),
-          ),
-          k.gap(size: 15),
-          Text(
-            "Tylenol 500mg",
-            style: k.style(
-              color: k.blue,
-              weight: FontWeight.bold,
-              fontSize: 24,
             ),
           ),
         ],
@@ -99,71 +56,88 @@ class _ComingUpState extends State<ComingUp> {
 }
 
 class BoxInfo extends StatelessWidget {
-  const BoxInfo({
-    super.key,
-    this.boxNumber = 0,
-  });
+  const BoxInfo({super.key, this.boxNumber = 1});
 
   final int boxNumber;
 
   @override
   Widget build(BuildContext context) {
     K k = K();
-    return Container(
-      height: 100,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: k.white,
-        borderRadius: k.roundedCorners(radius: 20),
-        boxShadow: k.shadows(),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          k.gap(size: 15),
-          Text(
-            "Box $boxNumber",
-            style: k.style(color: k.black),
-          ),
-          k.gap(size: 15),
-          SizedBox(
-            width: 160,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Med: Tylenol 500mg",
-                  style: k.style(color: k.black),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                k.gap(size: 10),
-                Text("Time: 14.00", style: k.style(color: k.black)),
-              ],
+    var db = Provider.of<LocalDataProvider>(context).database;
+    if (db != null) {
+      return Container(
+        height: 100,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: k.white,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            k.gap(size: 15),
+            Text(
+              "Box $boxNumber",
+              style: k.style(color: k.black),
             ),
-          ),
-          k.gap(size: 15),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: 80,
-              height: 50,
-              decoration: BoxDecoration(
-                color: k.blue,
-                borderRadius: k.roundedCorners(),
-              ),
-              child: Center(
-                child: Text(
-                  "Edit",
-                  style: k.style(weight: FontWeight.bold),
-                ),
+            k.gap(size: 15),
+            SizedBox(
+              width: 160,
+              child: FutureBuilder(
+                initialData: const [
+                  {"medicine": "loading..."},
+                  {"hour": "loading..."},
+                  {"minute": "loading..."}
+                ],
+                future: db.rawQuery('SELECT * FROM glongya WHERE id = $boxNumber'),
+                builder: ((context, snapshot) {
+                  debugPrint(snapshot.data.toString());
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Medicine: ${snapshot.data![0]["medicine"]}",
+                        style: k.style(color: k.black),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      k.gap(size: 10),
+                      Text("Time: ${snapshot.data![0]["hour"]}:${snapshot.data![0]["minute"]}",
+                          style: k.style(color: k.black)),
+                    ],
+                  );
+                }),
               ),
             ),
-          ),
-          k.gap(size: 15)
-        ],
-      ),
-    );
+            k.gap(size: 15),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => InformationScreen(boxNumber: boxNumber)),
+                );
+              },
+              child: Container(
+                width: 80,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: k.blue,
+                  borderRadius: k.roundedCorners(radius: 0),
+                ),
+                child: Center(
+                  child: Text(
+                    "Edit",
+                    style: k.style(weight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+            k.gap(size: 15)
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }
