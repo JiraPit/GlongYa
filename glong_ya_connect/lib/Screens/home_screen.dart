@@ -35,12 +35,14 @@ class HomeScreen extends StatelessWidget {
                     [
                       k.gap(size: 20),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          //TODO: Bluetooth
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                           decoration: BoxDecoration(color: k.blue),
                           child: Text(
-                            "Upload to your GlongYa",
+                            "Connect",
                             style: k.style(fontSize: 20, weight: FontWeight.bold),
                           ),
                         ),
@@ -102,7 +104,8 @@ class BoxInfo extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       k.gap(size: 10),
-                      Text("Time: ${snapshot.data![0]["hour"]}:${snapshot.data![0]["minute"]}",
+                      Text(
+                          "Time: ${_formatTime(snapshot.data![0]["hour"])}:${_formatTime(snapshot.data![0]["minute"])}",
                           style: k.style(color: k.black)),
                     ],
                   );
@@ -138,6 +141,14 @@ class BoxInfo extends StatelessWidget {
       );
     } else {
       return Container();
+    }
+  }
+
+  String _formatTime(Object? time) {
+    if (time.toString().length < 2) {
+      return "0${time.toString()}";
+    } else {
+      return time.toString();
     }
   }
 }

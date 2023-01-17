@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:glong_ya_connect/Konstants/konstants.dart';
 import 'package:glong_ya_connect/Utilities/LocalDataProvider.dart';
@@ -18,7 +19,8 @@ class _InformationScreenState extends State<InformationScreen> {
   @override
   Widget build(BuildContext context) {
     K k = K();
-    String value2change = "";
+    String newMedicine = "";
+    List<int> newTime = [];
     return Scaffold(
         backgroundColor: k.white,
         appBar: AppBar(title: const Text("Medicine Information")),
@@ -34,59 +36,106 @@ class _InformationScreenState extends State<InformationScreen> {
           builder: ((context, snapshot) {
             return Column(children: [
               k.gap(size: 20),
-              informationField(
+              _informationField(
                 context,
                 name: "Box",
                 info: widget.boxNumber.toString(),
                 editable: false,
               ),
-              informationField(
+              _informationField(
                 context,
                 name: "Medicine",
                 info: snapshot.data![0]["medicine"].toString(),
-                editPopup: () {
-                  Alert(
-                    context: context,
-                    title: "Medicine",
-                    buttons: [
-                      DialogButton(
-                        onPressed: () {
-                          setState(() {
-                            Provider.of<LocalDataProvider>(context, listen: false)
-                                .modifyDatabase(id: widget.boxNumber, medicine: value2change);
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text("Save", style: k.style()),
-                      ),
-                      DialogButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text("Cancel", style: k.style()),
-                      ),
-                    ],
-                    content: TextField(
-                      onChanged: ((value) {
-                        if (value != "") {
-                          value2change = value;
-                        }
-                      }),
-                    ),
-                  ).show();
-                },
+                editPopup: () => _medicineEditPopup(context, newMedicine, k).show(),
               ),
-              informationField(
+              _informationField(
                 context,
                 name: "Time",
-                info: "${snapshot.data![0]["hour"]} : ${snapshot.data![0]["minute"]}",
+                info:
+                    "${_formatTime(snapshot.data![0]["hour"])} : ${_formatTime(snapshot.data![0]["minute"])}",
+                editPopup: () => _timeEditPopup(context, newTime, k).show(),
               ),
             ]);
           }),
         ));
   }
 
-  Padding informationField(
+  Alert _medicineEditPopup(BuildContext context, String value2change, K k) {
+    return Alert(
+      context: context,
+      title: "Medicine",
+      buttons: [
+        DialogButton(
+          onPressed: () {
+            setState(() {
+              Provider.of<LocalDataProvider>(context, listen: false)
+                  .modifyDatabase(id: widget.boxNumber, medicine: value2change);
+            });
+            Navigator.pop(context);
+          },
+          child: Text("Save", style: k.style()),
+        ),
+        DialogButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text("Cancel", style: k.style()),
+        ),
+      ],
+      content: TextField(
+        onChanged: ((value) {
+          if (value != "") {
+            value2change = value;
+          }
+        }),
+      ),
+    );
+  }
+
+  Alert _timeEditPopup(BuildContext context, List<int> value2change, K k) {
+    return Alert(
+      context: context,
+      title: "Time",
+      buttons: [
+        DialogButton(
+          onPressed: () {
+            setState(() {
+              Provider.of<LocalDataProvider>(context, listen: false)
+                  .modifyDatabase(id: widget.boxNumber, hour: value2change[0], minute: value2change[1]);
+            });
+            Navigator.pop(context);
+          },
+          child: Text("Save", style: k.style()),
+        ),
+        DialogButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text("Cancel", style: k.style()),
+        ),
+      ],
+      content: DateTimePicker(
+        type: DateTimePickerType.time,
+        onChanged: (newValue) {
+          value2change = [
+            int.parse(newValue.split(":")[0]),
+            int.parse(newValue.split(":")[1]),
+          ];
+        },
+      ),
+    );
+  }
+
+  String _formatTime(Object? time) {
+    debugPrint(time.toString());
+    if (time.toString().length < 2) {
+      return "0${time.toString()}";
+    } else {
+      return time.toString();
+    }
+  }
+
+  Padding _informationField(
     BuildContext context, {
     String name = "",
     String info = "",
