@@ -1,8 +1,6 @@
-#include <ThreeWire.h>  
-#include <RtcDS1302.h>
-z
-ThreeWire myWire(A4, A5, 10); // IO, SCLK, CE
-RtcDS1302<ThreeWire> Rtc(myWire);
+#include <Wire.h> // must be included here so that Arduino library object file references work
+#include <RtcDS3231.h>
+RtcDS3231<TwoWire> Rtc(Wire);
 
 uint8_t month, day, hour, minute, second;
 uint16_t year;
@@ -10,39 +8,18 @@ uint16_t year;
 void setup () 
 {
     Serial.begin(57600);
-    
-/*********************** RTC Setting *********************/
+/*********************** RTC Setup *********************/
     Rtc.Begin();
-
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-
     RtcDateTime now = Rtc.GetDateTime();
     if (now < compiled) Rtc.SetDateTime(compiled);
+    Rtc.Enable32kHzPin(false);
+    Rtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone);
 /*********************************************************/
 }
 
 void loop () 
 {
-  /**********************************/
   RtcDateTime now = Rtc.GetDateTime();
   printDateTime(now);
-  /**********************************/
-}
-
-void printDateTime(const RtcDateTime& dt)
-{
-  year   = (int)dt.Year();
-  month  = (int)dt.Month();
-  day    = (int)dt.Day();
-  hour   = (int)dt.Hour();
-  minute = (int)dt.Minute();
-  second = (int)dt.Second();
-  
-  String str = String(day) + 
-               "/" + String(month) + 
-               "/" + String(year) + 
-               "   " + String(hour) + 
-               ":" + String(minute) + 
-               ":" + String(second);
-  Serial.println(str);
 }
