@@ -46,7 +46,7 @@ class ConnectionScreen extends StatelessWidget {
   }
 
   Future<void> _upload(BuildContext context, BluetoothConnection bluetooth) async {
-    String data = await Provider.of<LocalDataProvider>(context, listen: false).formatedDatabase();
+    String data = await Provider.of<LocalDataProvider>(context, listen: false).formatDatabase();
     bluetooth.output.add(ascii.encode(data));
     bluetooth.output.allSent.then((value) {
       Alert(

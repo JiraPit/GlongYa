@@ -18,13 +18,14 @@ class LocalDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> formatedDatabase() async {
+  Future<String> formatDatabase() async {
     if (database == null) {
       return "!";
     }
     List<Map<String, Object?>> data = await database!.rawQuery("SELECT * FROM glongya");
-    debugPrint(data.toString());
-    return "1";
+    String formatedData = data.map((e) => e["hour"] != null ? "${e["id"]},${e["minute"]}" : "").join("/");
+    debugPrint(formatedData);
+    return formatedData;
   }
 
   Future<void> modifyDatabase({int? id, String? medicine, int? hour, int? minute}) async {

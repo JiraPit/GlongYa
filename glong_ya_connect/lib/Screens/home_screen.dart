@@ -11,6 +11,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     K k = K();
+    Provider.of<LocalDataProvider>(context).formatDatabase();
     String bluetoothAddress = "";
     return Scaffold(
       backgroundColor: Colors.blueGrey[100],
@@ -35,35 +36,45 @@ class HomeScreen extends StatelessWidget {
                             ))
                         .toList() +
                     [
-                      k.gap(size: 20),
-                      TextField(
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            bluetoothAddress = value;
-                          }
-                        },
-                      ),
-                      k.gap(size: 20),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ConnectionScreen(
-                                address: bluetoothAddress,
+                      k.gap(size: 60),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 220,
+                            child: TextField(
+                              decoration: const InputDecoration(labelText: "Bluetooth Address"),
+                              onChanged: (value) {
+                                if (value.isNotEmpty) {
+                                  bluetoothAddress = value;
+                                }
+                              },
+                            ),
+                          ),
+                          k.gap(size: 20),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ConnectionScreen(
+                                    address: bluetoothAddress,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                              decoration: BoxDecoration(color: k.blue),
+                              child: Text(
+                                "Upload",
+                                style: k.style(fontSize: 20, weight: FontWeight.bold),
                               ),
                             ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                          decoration: BoxDecoration(color: k.blue),
-                          child: Text(
-                            "Connect and Upload",
-                            style: k.style(fontSize: 20, weight: FontWeight.bold),
-                          ),
-                        ),
-                      )
+                          )
+                        ],
+                      ),
                     ],
               ),
             ),
@@ -110,7 +121,6 @@ class BoxInfo extends StatelessWidget {
                 ],
                 future: db.rawQuery('SELECT * FROM glongya WHERE id = $boxNumber'),
                 builder: ((context, snapshot) {
-                  debugPrint(snapshot.data.toString());
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
