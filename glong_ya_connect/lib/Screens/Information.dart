@@ -3,7 +3,7 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:glong_ya_connect/Konstants/konstants.dart';
-import 'package:glong_ya_connect/Utilities/LocalDataProvider.dart';
+import 'package:glong_ya_connect/Utilities/local_data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 

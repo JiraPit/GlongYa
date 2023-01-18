@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:glong_ya_connect/Konstants/konstants.dart';
-import 'package:glong_ya_connect/Screens/Information.dart';
-import 'package:glong_ya_connect/Utilities/LocalDataProvider.dart';
+import 'package:glong_ya_connect/Screens/information.dart';
+import 'package:glong_ya_connect/Screens/connection_screen.dart';
+import 'package:glong_ya_connect/Utilities/local_data_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -36,13 +37,14 @@ class HomeScreen extends StatelessWidget {
                       k.gap(size: 20),
                       GestureDetector(
                         onTap: () {
-                          //TODO: Bluetooth
+                          Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => const ConnectionScreen()));
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                           decoration: BoxDecoration(color: k.blue),
                           child: Text(
-                            "Connect",
+                            "Connect and Upload",
                             style: k.style(fontSize: 20, weight: FontWeight.bold),
                           ),
                         ),

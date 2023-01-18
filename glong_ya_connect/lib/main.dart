@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:glong_ya_connect/Utilities/LocalDataProvider.dart';
+import 'package:glong_ya_connect/Utilities/local_data_provider.dart';
 import 'package:provider/provider.dart';
 import 'Konstants/konstants.dart';
 import 'Screens/home_screen.dart';

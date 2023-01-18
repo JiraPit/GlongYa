@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class LocalDataProvider extends ChangeNotifier {
@@ -17,6 +16,13 @@ class LocalDataProvider extends ChangeNotifier {
       },
     );
     notifyListeners();
+  }
+
+  Future<String> formatedDatabase() async {
+    if (database == null) {
+      return "!";
+    }
+    return "1";
   }
 
   Future<void> modifyDatabase({int? id, String? medicine, int? hour, int? minute}) async {
