@@ -22,6 +22,8 @@ class LocalDataProvider extends ChangeNotifier {
     if (database == null) {
       return "!";
     }
+    List<Map<String, Object?>> data = await database!.rawQuery("SELECT * FROM glongya");
+    debugPrint(data.toString());
     return "1";
   }
 

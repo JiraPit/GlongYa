@@ -11,18 +11,19 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     K k = K();
+    String bluetoothAddress = "";
     return Scaffold(
       backgroundColor: Colors.blueGrey[100],
       appBar: AppBar(title: const Text("Glong Ya")),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.blueGrey[100],
-            ),
-            child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.blueGrey[100],
+              ),
               child: Column(
                 children: [k.gap(size: 10)] +
                     [1, 2, 3]
@@ -35,10 +36,24 @@ class HomeScreen extends StatelessWidget {
                         .toList() +
                     [
                       k.gap(size: 20),
+                      TextField(
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            bluetoothAddress = value;
+                          }
+                        },
+                      ),
+                      k.gap(size: 20),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => const ConnectionScreen()));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConnectionScreen(
+                                address: bluetoothAddress,
+                              ),
+                            ),
+                          );
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -52,8 +67,8 @@ class HomeScreen extends StatelessWidget {
                     ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,77 +1,114 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:glong_ya_connect/Konstants/konstants.dart';
 import 'package:glong_ya_connect/Utilities/local_data_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
-class ConnectionScreen extends StatefulWidget {
-  const ConnectionScreen({super.key});
+class ConnectionScreen extends StatelessWidget {
+  const ConnectionScreen({super.key, this.address = ""});
+  final String address;
 
-  @override
-  State<ConnectionScreen> createState() => _ConnectionScreenState();
-}
-
-class _ConnectionScreenState extends State<ConnectionScreen> {
   @override
   Widget build(BuildContext context) {
-    K k = K();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Connection and Upload"),
+        title: const Text("Connect and Upload"),
       ),
       body: FutureBuilder(
-        future: FlutterBluetoothSerial.instance.requestEnable(),
+        future: FlutterBluetoothSerial.instance.state,
+        initialData: BluetoothState.STATE_OFF,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return _bluetoothEnabled(k);
+          if (snapshot.data == BluetoothState.STATE_ON) {
+            return _bluetoothEnabled(context, address);
           } else {
-            return _bluetoothWaiting();
+            return _bluetoothDisabled();
           }
         },
       ),
     );
   }
 
-  Widget _bluetoothWaiting() {
-    return const Center(
-      child: Icon(
-        Icons.bluetooth_disabled,
-        size: 20,
+  Widget _bluetoothDisabled() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(
+            Icons.bluetooth_disabled,
+            size: 60,
+          ),
+          Text("Bluetooth disabled")
+        ],
       ),
     );
   }
 
-  void _send() async {
+  Future<void> _upload(BuildContext context, BluetoothConnection bluetooth) async {
     String data = await Provider.of<LocalDataProvider>(context, listen: false).formatedDatabase();
+    bluetooth.output.add(ascii.encode(data));
+    bluetooth.output.allSent.then((value) {
+      Alert(
+        context: context,
+        type: AlertType.success,
+        title: "Uploaded successfully",
+      ).show();
+    });
   }
 
-  Widget _bluetoothEnabled(K k) {
+  Future<BluetoothConnection?> _connect(BuildContext context, String address) async {
+    try {
+      return await BluetoothConnection.toAddress(address);
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialog(
+          title: Text("Address Error"),
+        ),
+      );
+      return null;
+    }
+  }
+
+  Widget _bluetoothEnabled(BuildContext context, String address) {
+    K k = K();
     return FutureBuilder(
-      future: FlutterBluetoothSerial.instance.getBondedDevices(),
-      builder: (BuildContext context, AsyncSnapshot<List<BluetoothDevice>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
+      future: _connect(context, address),
+      builder: (BuildContext context, AsyncSnapshot<BluetoothConnection?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
           return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              k.gap(size: 40),
-              ListView(
-                children: snapshot.data!
-                    .map(
-                      (BluetoothDevice d) => ListTile(
-                        onTap: () {
-                          _send();
-                        },
-                        title: Text(
-                          d.name ?? "",
-                        ),
-                      ),
-                    )
-                    .toList(),
+              Text(
+                "GlongYa is connected and ready to be updated",
+                style: k.style(),
+              ),
+              k.gap(size: 10),
+              GestureDetector(
+                onTap: () => _upload(context, snapshot.data!),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: k.blue,
+                  ),
+                  child: const Text("Upload"),
+                ),
               )
             ],
           );
         } else {
-          return const Center(
-            child: Icon(Icons.bluetooth_searching),
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.bluetooth_searching,
+                  size: 60,
+                ),
+                Text("Bluetooth waiting for connection"),
+              ],
+            ),
           );
         }
       },
