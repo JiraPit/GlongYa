@@ -21,6 +21,7 @@ void setup ()
     pinMode(ledsPin[0],OUTPUT);
     pinMode(ledsPin[1],OUTPUT);
     pinMode(ledsPin[2],OUTPUT);
+    
 /*********************** RTC Setup *********************/
     Rtc.Begin();
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
@@ -30,27 +31,19 @@ void setup ()
     Rtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone);
 /*********************************************************/
 
-  //test
-  alarm[0][0] = 18;
-  alarm[0][1] = 30;
-  alarm[1][0] = 18;
-  alarm[1][1] = 30;
-
   for (int i = 0; i<3;i++){
     digitalWrite(ledsPin[i],LOW);
   }
-
-  
 }
 
 void loop () 
 {
-  Serial.println(digitalRead(buttonPin));
   if (digitalRead(buttonPin)==LOW){
     for (int i=0; i<3; i++){
       digitalWrite(ledsPin[i],LOW);
     }
   }
+
   if (Bluetooth.available()>0){
     start_buzzer();
     String rec = Bluetooth.readStringUntil('!');
@@ -75,6 +68,7 @@ void loop ()
       
     }
   }
+
   RtcDateTime now = Rtc.GetDateTime();
   // Serial.println((String)now.Hour()+":"+(String)now.Minute()+":"+(String)now.Second());
   for (int i = 0; i< 3; i++){
@@ -96,6 +90,7 @@ void loop ()
       break;
     }
   }
+  
 }
 
 void start_buzzer(){
