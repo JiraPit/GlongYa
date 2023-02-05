@@ -7,17 +7,20 @@ SoftwareSerial Bluetooth(2,3);
 
 uint8_t hour, minute, second;
 int buzzerPin = 5;
+int buttonPin = 7;
 int ledsPin[3] = {8,9,10};
-int alarm[3][2] = {{21,44},{21,34},{21,34}};
-
+int alarm[3][2] = {{0,0},{0,0},{0,0}};
 int toAlarm[3] = {0,0,0};
-
 
 void setup () 
 {
     start_buzzer();
     Serial.begin(9600);
     Bluetooth.begin(9600);
+    pinMode(buttonPin, INPUT_PULLUP);
+    pinMode(ledsPin[0],OUTPUT);
+    pinMode(ledsPin[1],OUTPUT);
+    pinMode(ledsPin[2],OUTPUT);
 /*********************** RTC Setup *********************/
     Rtc.Begin();
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
@@ -42,6 +45,12 @@ void setup ()
 
 void loop () 
 {
+  Serial.println(digitalRead(buttonPin));
+  if (digitalRead(buttonPin)==LOW){
+    for (int i=0; i<3; i++){
+      digitalWrite(ledsPin[i],LOW);
+    }
+  }
   if (Bluetooth.available()>0){
     start_buzzer();
     String rec = Bluetooth.readStringUntil('!');
@@ -83,14 +92,9 @@ void loop ()
   for (int i = 0; i< 3; i++) {
     if (toAlarm[i]==1){
       alarm_buzzer();
-      delay(2000);
+      toAlarm[i]=0;
       break;
     }
-  }
-
-  for (int i = 0; i< 3; i++){
-    digitalWrite(ledsPin[i],LOW);
-    toAlarm[i]=0;
   }
 }
 
@@ -105,12 +109,12 @@ void start_buzzer(){
 }
 
 void alarm_buzzer(){
-    for(int i = 0; i < 15; i ++){
-      tone(buzzerPin,2000);
-      delay(100);
-      noTone(buzzerPin);
-      delay(100);
-    }
+  for(int i = 0; i < 30; i ++){
+    tone(buzzerPin,2000);
+    delay(100);
+    noTone(buzzerPin);
+    delay(100);
+  }
 }
 
 
