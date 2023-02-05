@@ -37,43 +37,23 @@ class HomeScreen extends StatelessWidget {
                         .toList() +
                     [
                       k.gap(size: 60),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 220,
-                            child: TextField(
-                              decoration: const InputDecoration(labelText: "Bluetooth Address"),
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  bluetoothAddress = value;
-                                }
-                              },
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConnectionScreen(),
                             ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                          decoration: BoxDecoration(color: k.blue),
+                          child: Text(
+                            "Connect",
+                            style: k.style(fontSize: 20, weight: FontWeight.bold),
                           ),
-                          k.gap(size: 20),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ConnectionScreen(
-                                    address: bluetoothAddress,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                              decoration: BoxDecoration(color: k.blue),
-                              child: Text(
-                                "Upload",
-                                style: k.style(fontSize: 20, weight: FontWeight.bold),
-                              ),
-                            ),
-                          )
-                        ],
+                        ),
                       ),
                     ],
               ),

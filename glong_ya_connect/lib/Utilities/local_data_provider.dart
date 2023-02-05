@@ -23,7 +23,7 @@ class LocalDataProvider extends ChangeNotifier {
       return "!";
     }
     List<Map<String, Object?>> data = await database!.rawQuery("SELECT * FROM glongya");
-    String formatedData = data.map((e) => e["hour"] != null ? "${e["id"]},${e["minute"]}" : "").join("/");
+    String formatedData = data.map((e) => e["hour"] != null ? "${e["hour"]},${e["minute"]}" : "").join("/");
     debugPrint(formatedData);
     return formatedData;
   }

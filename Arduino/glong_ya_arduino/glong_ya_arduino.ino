@@ -3,16 +3,21 @@
 #include <SoftwareSerial.h>
 
 RtcDS3231<TwoWire> Rtc(Wire);
-SoftwareSerial bluetooth(2,3);
+SoftwareSerial Bluetooth(2,3);
 
 uint8_t hour, minute, second;
 int buzzerPin = 5;
+int ledsPin[3] = {8,9,10};
 int alarm[3][2] = {{21,44},{21,34},{21,34}};
+
+int toAlarm[3] = {0,0,0};
+
 
 void setup () 
 {
     start_buzzer();
-    Serial.begin(57600);
+    Serial.begin(9600);
+    Bluetooth.begin(9600);
 /*********************** RTC Setup *********************/
     Rtc.Begin();
     RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
@@ -21,14 +26,27 @@ void setup ()
     Rtc.Enable32kHzPin(false);
     Rtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone);
 /*********************************************************/
+
+  //test
+  alarm[0][0] = 18;
+  alarm[0][1] = 30;
+  alarm[1][0] = 18;
+  alarm[1][1] = 30;
+
+  for (int i = 0; i<3;i++){
+    digitalWrite(ledsPin[i],LOW);
+  }
+
+  
 }
 
 void loop () 
 {
-  if (Serial.available()>0){
-    String rec = Serial.readStringUntil('!');
+  if (Bluetooth.available()>0){
+    start_buzzer();
+    String rec = Bluetooth.readStringUntil('!');
+    Serial.println(rec);
     if (rec != "!"){
-      Serial.println(rec);
       String box[4];
       char sz[128];
       rec.toCharArray(sz,sizeof(sz));
@@ -49,13 +67,31 @@ void loop ()
     }
   }
   RtcDateTime now = Rtc.GetDateTime();
+  // Serial.println((String)now.Hour()+":"+(String)now.Minute()+":"+(String)now.Second());
   for (int i = 0; i< 3; i++){
     if ((int)now.Hour() == alarm[i][0] && (int)now.Minute() == alarm[i][1] && (int)now.Second() == 0) {
-    alarm_buzzer();
-    delay(2000);
+      toAlarm[i]=1;
     }
   }
-  
+
+  for (int i = 0; i< 3; i++){
+    if (toAlarm[i]==1){
+      digitalWrite(ledsPin[i],HIGH);
+    }
+  }
+
+  for (int i = 0; i< 3; i++) {
+    if (toAlarm[i]==1){
+      alarm_buzzer();
+      delay(2000);
+      break;
+    }
+  }
+
+  for (int i = 0; i< 3; i++){
+    digitalWrite(ledsPin[i],LOW);
+    toAlarm[i]=0;
+  }
 }
 
 void start_buzzer(){
@@ -75,6 +111,7 @@ void alarm_buzzer(){
       noTone(buzzerPin);
       delay(100);
     }
-
 }
+
+
 
