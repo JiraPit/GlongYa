@@ -15,10 +15,12 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     K k = K();
     Provider.of<LocalDataProvider>(context, listen: false).loadDatabase();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

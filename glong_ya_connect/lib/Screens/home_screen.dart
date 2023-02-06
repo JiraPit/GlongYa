@@ -12,7 +12,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     K k = K();
     Provider.of<LocalDataProvider>(context).formatDatabase();
-    String bluetoothAddress = "";
     return Scaffold(
       backgroundColor: Colors.blueGrey[100],
       appBar: AppBar(title: const Text("Glong Ya")),

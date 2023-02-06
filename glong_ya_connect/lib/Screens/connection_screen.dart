@@ -138,48 +138,4 @@ class ConnectionScreen extends StatelessWidget {
       },
     );
   }
-
-  // Widget _bluetoothEnabled(BuildContext context, String address) {
-  //   K k = K();
-  //   return FutureBuilder(
-  //     future: _connect(context),
-  //     builder: (BuildContext context, AsyncSnapshot<BluetoothConnection?> snapshot) {
-  //       if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
-  //         return Column(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             Text(
-  //               "GlongYa is connected and ready to be updated",
-  //               style: k.style(),
-  //             ),
-  //             k.gap(size: 10),
-  //             GestureDetector(
-  //               onTap: () => _upload(context, snapshot.data!),
-  //               child: Container(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-  //                 decoration: BoxDecoration(
-  //                   color: k.blue,
-  //                 ),
-  //                 child: const Text("Upload"),
-  //               ),
-  //             )
-  //           ],
-  //         );
-  //       } else {
-  //         return Center(
-  //           child: Column(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: const [
-  //               Icon(
-  //                 Icons.bluetooth_searching,
-  //                 size: 60,
-  //               ),
-  //               Text("Bluetooth waiting for connection"),
-  //             ],
-  //           ),
-  //         );
-  //       }
-  //     },
-  //   );
-  // }
 }
