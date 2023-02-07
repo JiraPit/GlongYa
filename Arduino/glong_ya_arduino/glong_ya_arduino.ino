@@ -70,7 +70,7 @@ void loop ()
   }
 
   RtcDateTime now = Rtc.GetDateTime();
-  // Serial.println((String)now.Hour()+":"+(String)now.Minute()+":"+(String)now.Second());
+  Serial.println((String)now.Hour()+":"+(String)now.Minute()+":"+(String)now.Second());
   for (int i = 0; i< 3; i++){
     if ((int)now.Hour() == alarm[i][0] && (int)now.Minute() == alarm[i][1] && (int)now.Second() == 0) {
       toAlarm[i]=1;
